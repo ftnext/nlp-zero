@@ -2,7 +2,8 @@ import numpy as np
 
 
 def preprocess(text):
-    """
+    """Convert text to a list of word ids; the list is called corpus.
+
     >>> text = "You say goodbye and I say hello."
     >>> corpus, word_to_id, id_to_word = preprocess(text)
     >>> word_to_id
@@ -26,3 +27,25 @@ def preprocess(text):
     corpus = np.array([word_to_id[w] for w in words])
 
     return corpus, word_to_id, id_to_word
+
+
+def create_co_matrix(corpus, vocab_size, window_size=1):
+    """Create co-occurrence matrix from corpus."""
+    corpus_size = len(corpus)
+    co_matrix = np.zeros((vocab_size, vocab_size), dtype=np.int32)
+
+    for idx, word_id in enumerate(corpus):
+        for i in range(1, window_size + 1):
+            left_idx = idx - i
+            right_idx = idx + i
+
+            # はみ出していない添字の語のカウントを1増やす
+            if left_idx >= 0:
+                left_word_id = corpus[left_idx]
+                co_matrix[word_id, left_word_id] += 1
+
+            if right_idx < corpus_size:
+                right_word_idx = corpus[right_idx]
+                co_matrix[word_id, right_word_idx] += 1
+
+    return co_matrix

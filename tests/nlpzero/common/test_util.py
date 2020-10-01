@@ -13,3 +13,25 @@ class PreprocessTestCase(TestCase):
         actual, _, _ = util.preprocess(text)
 
         np.testing.assert_array_equal(actual, expected)
+
+
+class CreateCoMatrixTestCase(TestCase):
+    def test_return_numpy_array_as_cooccurrence_matrix(self):
+        text = "You say goodbye and I say hello."
+        corpus, word_to_id, _ = util.preprocess(text)
+        expected = np.array(
+            [
+                [0, 1, 0, 0, 0, 0, 0],
+                [1, 0, 1, 0, 1, 1, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [0, 0, 1, 0, 1, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 0, 1, 0],
+            ],
+            dtype=np.int32,
+        )
+
+        actual = util.create_co_matrix(corpus, len(word_to_id))
+
+        np.testing.assert_array_equal(actual, expected)
